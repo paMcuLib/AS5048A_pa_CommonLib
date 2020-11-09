@@ -157,6 +157,13 @@ bool AS5048A::error()
 	return errorFlag;
 }
 
+void AS5048A::delay()
+{
+	unsigned int a;
+	for (a = 20000; a > 0; a--)
+		;
+}
+
 /*
  * Read a register from the sensor
  * Takes the address of the register as a 16 bit uint16_t
@@ -164,7 +171,7 @@ bool AS5048A::error()
  */
 uint16_t AS5048A::read(uint16_t registerAddress)
 {
-	uint16_t command = 0b0100000000000000; // PAR=0 R/W=R
+	uint16_t command = 0x4000; // PAR=0 R/W=R
 	command = command | registerAddress;
 
 	//Add a parity bit on the the MSB
@@ -188,21 +195,29 @@ uint16_t AS5048A::read(uint16_t registerAddress)
 
 	//Send the command
 	setCS(0);
+	delay();
 	// digitalWrite(_cs, LOW);
 	pa_spiTransmitInSpecialSpeed(dataSet, 2, pa_SpiSpeed::SpiSpeed_About1mhz);
 	// SPI.transfer(left_uint8_t);
 	// SPI.transfer(right_uint8_t);
 	// digitalWrite(_cs, HIGH);
+	delay();
 	setCS(1);
+
+	dataSet[1] = 0;
+	dataSet[0] = 0;
 
 	//Now read the response
 	// digitalWrite(_cs, LOW);
 	setCS(0);
+	delay();
+	// pa_spiTransmitInSpecialSpeed(dataSet, 2, pa_SpiSpeed::SpiSpeed_About1mhz);
 	pa_spiReceiveInSpecialSpeed(dataSet, 2, pa_SpiSpeed::SpiSpeed_About1mhz);
 	// pa_spiReceiveInSpecialSpeed(dataSet + 1, 1, pa_SpiSpeed::SpiSpeed_About1mhz);
 	// left_uint8_t = SPI.transfer(0x00);
 	// right_uint8_t = SPI.transfer(0x00);
 	// digitalWrite(_cs, HIGH);
+	delay();
 	setCS(1);
 
 	//SPI - end transaction

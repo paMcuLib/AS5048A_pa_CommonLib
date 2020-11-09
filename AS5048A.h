@@ -100,7 +100,9 @@ public:
 	void setCS(char state);
 
 private:
+	void delay();
 	uint8_t spiCalcEvenParity(uint16_t);
+	uint16_t SPI_WriteByte(uint16_t TxData);
 	uint8_t id;
 };
 
