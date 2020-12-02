@@ -23,7 +23,7 @@ public:
 	 * Initialiser
 	 * Sets up the SPI interface
 	 */
-	void init(uint8_t id);
+	void init(uint8_t id, int delayCnt);
 
 	/**
 	 * Closes the SPI connection
@@ -94,16 +94,17 @@ public:
 	 * Check if an error has been encountered.
 	 */
 	bool error();
-	//硬件层////////////////////////////////////////////////////////////////////////////////////
-	void Hardware_init();
-
-	void setCS(char state);
 
 private:
 	void delay();
 	uint8_t spiCalcEvenParity(uint16_t);
 	uint16_t SPI_WriteByte(uint16_t TxData);
 	uint8_t id;
+	int delayCnt;
+	//硬件层////////////////////////////////////////////////////////////////////////////////////
+	void Hardware_init();
+
+	void setCS(char state);
 };
 
 #endif // __AS5048A_H__

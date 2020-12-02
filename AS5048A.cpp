@@ -23,9 +23,10 @@ AS5048A::AS5048A()
  * Initialiser
  * Sets up the SPI interface
  */
-void AS5048A::init(uint8_t id1)
+void AS5048A::init(uint8_t id1, int delayCnt1)
 {
 	id = id1;
+	delayCnt = delayCnt1;
 	// // 1MHz clock (AMS should be able to accept up to 10MHz)
 	// settings = SPISettings(1000000, MSBFIRST, SPI_MODE1);
 
@@ -160,7 +161,7 @@ bool AS5048A::error()
 void AS5048A::delay()
 {
 	unsigned int a;
-	for (a = 20000; a > 0; a--)
+	for (a = delayCnt; a > 0; a--)
 		;
 }
 
@@ -212,7 +213,7 @@ uint16_t AS5048A::read(uint16_t registerAddress)
 	setCS(0);
 	delay();
 	// pa_spiTransmitInSpecialSpeed(dataSet, 2, pa_SpiSpeed::SpiSpeed_About1mhz);
-	pa_spiReceiveInSpecialSpeed(dataSet, 2, pa_SpiSpeed::SpiSpeed_About1mhz);
+	pa_spiReceiveInSpecialSpeed(dataSet, dataSet, 2, pa_SpiSpeed::SpiSpeed_About1mhz);
 	// pa_spiReceiveInSpecialSpeed(dataSet + 1, 1, pa_SpiSpeed::SpiSpeed_About1mhz);
 	// left_uint8_t = SPI.transfer(0x00);
 	// right_uint8_t = SPI.transfer(0x00);
@@ -242,9 +243,10 @@ uint16_t AS5048A::read(uint16_t registerAddress)
 	{
 		errorFlag = false;
 	}
-
+	// dataSet[0] = 0xff;
 	//Return the data, stripping the parity and error bits
-	return (((dataSet[0] & 0xFF) << 8) | (dataSet[1] & 0xFF)) & ~0xC000;
+	return (((dataSet[0] & 0xFF) << 8) | (dataSet[1] & 0xFF)) &
+		   ~0xC000;
 }
 
 // /*
